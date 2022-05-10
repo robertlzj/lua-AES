@@ -1,6 +1,7 @@
 
-require'Class'
-BaseFun_AES = Class("AES");
+local _,Class=pcall(require,'Class')
+Class=_ and Class or require'AES.Class'
+local BaseFun_AES = Class("AES");
 
 function BaseFun_AES:ctor()
 	self.N_ROW = 4;

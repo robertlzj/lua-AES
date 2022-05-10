@@ -2,7 +2,7 @@
 -- 类默认初始化函数 ctor 仅为类初始对象时使用，且创建时必然会被调用，ctor函数可用来在创建对象时构建默认变量
 -- 在子类初始化时，可以通过类名前加双下划线"__"显式引用父类对象并调用其中的自定义初始化函数来传递参数
 -- 参数 ：类名 ，父类列表
-function Class(className, ...)
+local function Class(className, ...)
     if type(className) ~= "string" then
         error("class name must string type");
     end
@@ -63,3 +63,4 @@ function Class(className, ...)
     end
     return cls;
 end
+return Class
