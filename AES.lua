@@ -298,7 +298,7 @@ function BaseFun_AES.GetStringKey(strKey)
 		if i <= nLen then
 			List[i] = string.byte(strKey , i);
 		else
-			List[i] = 0; -- ÁãÌî³ä
+			List[i] = 0; -- é›¶å¡«å……
 		end
 	end
 	return List;
@@ -316,7 +316,7 @@ function BaseFun_AES:GetBlockList(strData)
 		if i <= nLen then
 			List[i] = string.byte(strData , i);
 		else
-			List[i] = 0; -- ÁãÌî³ä
+			List[i] = 0; -- é›¶å¡«å……
 		end
 	end
 	return List;
