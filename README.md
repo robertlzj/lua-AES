@@ -6,6 +6,8 @@
 
 相关内容包含Padding With ISO10126，或可整合。
 
+## 主要文件和函数：
+
 ## `AES.lua`
 
 `BaseFun_AES` = `AES_Class`，后续简称AES。
@@ -15,7 +17,7 @@
 
 `AES:set_key(key , keylen)`
 
-私有。
+内部使用。
 
 - `key`：密钥。[字节数组](#字节数组)。
 - `keylen`：密钥长度——16 / 24 / 32 （128/192/256bits）。
@@ -69,7 +71,7 @@
 
 `byteList_key = AES.GetStringKey(strKey)`
 
-私有。
+内部使用。
 包含“零填充”，填充至16/24/32位。
 填充后传递给[`set_key`](#set_key)。
 
