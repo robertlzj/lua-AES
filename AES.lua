@@ -1,4 +1,5 @@
 
+require'Class'
 BaseFun_AES = Class("AES");
 
 function BaseFun_AES:ctor()
@@ -262,17 +263,17 @@ function BaseFun_AES:encrypt(plain , pPos , cipher , cPos)
 	self:shift_sub_rows(s1);
 	self:copy_and_key(cipher , cPos , s1 , 1 , self.key_sched , 1 + (self.round * self.N_BLOCK));
 end
-function BaseFun_AES:decrypt(plain , pPos , cipher , cPos)
+function BaseFun_AES:decrypt(cipher , pPos , plain , cPos)
 	local r , s1 , s2;
 	s1 = {};
 	s2 = {};
-	self:copy_and_key(s1 , 1 , plain , pPos , self.key_sched , 1 + (self.round * self.N_BLOCK));
+	self:copy_and_key(s1 , 1 , cipher , pPos , self.key_sched , 1 + (self.round * self.N_BLOCK));
 	self:inv_shift_sub_rows(s1);
 	for r = self.round - 1 , 1 , -1 do
 		self:copy_and_key(s2 , 1 , s1 , 1 , self.key_sched , 1 + (r * self.N_BLOCK));
 		self:inv_mix_sub_columns(s1 , s2);
 	end
-	self:copy_and_key(cipher , cPos , s1 , 1 , self.key_sched , 1);
+	self:copy_and_key(plain , cPos , s1 , 1 , self.key_sched , 1);
 end
 function BaseFun_AES.GetStringList(strBytes)
 	local i , List;
@@ -400,3 +401,5 @@ function BaseFun_AES:cbc_EncryptDecrypt(strData , strKey , strIV , bEncrypt)
 	return table.concat(txtList);
 	-- return string.char(table.unpack(reList));
 end
+
+return BaseFun_AES

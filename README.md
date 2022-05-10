@@ -1,94 +1,129 @@
-# lua-AES
+# lua53-AES
 
-测试代码：
+非原创。搬运，解读，应用。
 
-  AES_obj = AES:new();
-  
-	local i , buf , buf2 , bComplete;
-	
-	-- 使用 Crypto++ Library 8.2 的部分用例
-	AES_Key = {0x2B , 0x7E , 0x15 , 0x16 , 0x28 , 0xAE , 0xD2 , 0xA6 , 0xAB , 0xF7 , 0x15 , 0x88 , 0x09 , 0xCF , 0x4F , 0x3C};
-	AES_EData = {0x6B , 0xC1 , 0xBE , 0xE2 , 0x2E , 0x40 , 0x9F , 0x96 , 0xE9 , 0x3D , 0x7E , 0x11 , 0x73 , 0x93 , 0x17 , 0x2A , 0xAE , 0x2D , 0x8A , 0x57 , 0x1E , 0x03 , 0xAC , 0x9C , 0x9E , 0xB7 , 0x6F , 0xAC , 0x45 , 0xAF , 0x8E , 0x51 , 0x30 , 0xC8 , 0x1C , 0x46 , 0xA3 , 0x5C , 0xE4 , 0x11 , 0xE5 , 0xFB , 0xC1 , 0x19 , 0x1A , 0x0A , 0x52 , 0xEF , 0xF6 , 0x9F , 0x24 , 0x45 , 0xDF , 0x4F , 0x9B , 0x17 , 0xAD , 0x2B , 0x41 , 0x7B , 0xE6 , 0x6C , 0x37 , 0x10};
-	AES_DData = {0x3A , 0xD7 , 0x7B , 0xB4 , 0x0D , 0x7A , 0x36 , 0x60 , 0xA8 , 0x9E , 0xCA , 0xF3 , 0x24 , 0x66 , 0xEF , 0x97 , 0xF5 , 0xD3 , 0xD5 , 0x85 , 0x03 , 0xB9 , 0x69 , 0x9D , 0xE7 , 0x85 , 0x89 , 0x5A , 0x96 , 0xFD , 0xBA , 0xAF , 0x43 , 0xB1 , 0xCD , 0x7F , 0x59 , 0x8E , 0xCE , 0x23 , 0x88 , 0x1B , 0x00 , 0xE3 , 0xED , 0x03 , 0x06 , 0x88 , 0x7B , 0x0C , 0x78 , 0x5E , 0x27 , 0xE8 , 0xAD , 0x3F , 0x82 , 0x23 , 0x20 , 0x71 , 0x04 , 0x72 , 0x5D , 0xD4};
-	
-	Msg("Test original:");
-	AES_obj:set_key(AES_Key , 16);
-	buf = {};
-	for i = 1 , 64 , 16 do
-		AES_obj:encrypt(AES_EData , i , buf , i);
-	end 
-	-- Msg(string.format("dl:%d bl:%d" , #AES_EData , #buf));
-	bComplete = true;
-	for i = 1 , 64 do
-		if AES_DData[i] ~= buf[i] then
-			bComplete = false;
-			Msg(string.format("encrypt err: %d , %02x , %02x" , i , AES_DData[i] , buf[i]));
-			break;
-		end
-	end
-	if bComplete then
-		Msg("encrypt complet");
-	else
-		Msg("encrypt Data:" .. sys.Convert(buf , T_Convert.HexText));
-	end
-	buf2 = {};
-	for i = 1 , 64 , 16 do
-		AES_obj:decrypt(AES_DData , i , buf2 , i);
-	end
-	bComplete = true;
-	for i = 1 , 64 do
-		if AES_EData[i] ~= buf2[i] then
-			bComplete = false;
-			Msg(string.format("decrypt err: %d , %02x , %02x" , i , AES_EData[i] , buf2[i]));
-			break;
-		end
-	end
-	if bComplete then
-		Msg("decrypt complet");
-	else
-		Msg("decrypt Data:" .. sys.Convert(buf2 , T_Convert.HexText));
-	end
-	
-	Msg("Test ecb:");
-	buf = AES_obj:ecb_EncryptDecrypt(string.char(table.unpack(AES_EData)) , string.char(table.unpack(AES_Key)) , true);
-	if buf == string.char(table.unpack(AES_DData)) then
-		Msg("encrypt complet");
-	else
-		Msg("encrypt Data:" .. sys.Convert(buf , T_Convert.HexText));
-	end
-	buf2 = AES_obj:ecb_EncryptDecrypt(buf , string.char(table.unpack(AES_Key)) , false);
-	if buf2 == string.char(table.unpack(AES_EData)) then
-		Msg("decrypt complet");
-	else
-		Msg("decrypt Data:" .. sys.Convert(buf2 , T_Convert.HexText));
-	end
-	
-	-- 默认 IV:1
-	AES_IV =  {0x01 , 0x00 , 0x00 , 0x00 , 0x00 , 0x00 , 0x00 , 0x00 , 0x01 , 0x00 , 0x00 , 0x00 , 0x00 , 0x00 , 0x00 , 0x00};
-	Msg("Test cbc:");
-	buf = AES_obj:cbc_EncryptDecrypt(string.char(table.unpack(AES_EData)) , string.char(table.unpack(AES_Key)) , string.char(table.unpack(AES_IV)) , true);
-	buf2 = AES_obj:cbc_EncryptDecrypt(buf , string.char(table.unpack(AES_Key)) , string.char(table.unpack(AES_IV)) , false);
-	if buf2 == string.char(table.unpack(AES_EData)) then
-		Msg("complet");
-	else
-		Msg("Data:" .. sys.Convert(buf2 , T_Convert.HexText));
-	end
-	
-	AES_IV =  {0x00 , 0x01 , 0x02 , 0x03 , 0x04 , 0x05 , 0x06 , 0x07 , 0x08 , 0x09 , 0x0A , 0x0B , 0x0C , 0x0D , 0x0E , 0x0F};
-	AES_Key = {0x2B , 0x7E , 0x15 , 0x16 , 0x28 , 0xAE , 0xD2 , 0xA6 , 0xAB , 0xF7 , 0x15 , 0x88 , 0x09 , 0xCF , 0x4F , 0x3C};
-	AES_EData = {0x6B , 0xC1 , 0xBE , 0xE2 , 0x2E , 0x40 , 0x9F , 0x96 , 0xE9 , 0x3D , 0x7E , 0x11 , 0x73 , 0x93 , 0x17 , 0x2A , 0xAE , 0x2D , 0x8A , 0x57 , 0x1E , 0x03 , 0xAC , 0x9C , 0x9E , 0xB7 , 0x6F , 0xAC , 0x45 , 0xAF , 0x8E , 0x51 , 0x30 , 0xC8 , 0x1C , 0x46 , 0xA3 , 0x5C , 0xE4 , 0x11 , 0xE5 , 0xFB , 0xC1 , 0x19 , 0x1A , 0x0A , 0x52 , 0xEF , 0xF6 , 0x9F , 0x24 , 0x45 , 0xDF , 0x4F , 0x9B , 0x17 , 0xAD , 0x2B , 0x41 , 0x7B , 0xE6 , 0x6C , 0x37 , 0x10};
-	AES_DData = {0x76 , 0x49 , 0xAB , 0xAC , 0x81 , 0x19 , 0xB2 , 0x46 , 0xCE , 0xE9 , 0x8E , 0x9B , 0x12 , 0xE9 , 0x19 , 0x7D , 0x50 , 0x86 , 0xCB , 0x9B , 0x50 , 0x72 , 0x19 , 0xEE , 0x95 , 0xDB , 0x11 , 0x3A , 0x91 , 0x76 , 0x78 , 0xB2 , 0x73 , 0xBE , 0xD6 , 0xB8 , 0xE3 , 0xC1 , 0x74 , 0x3B , 0x71 , 0x16 , 0xE6 , 0x9E , 0x22 , 0x22 , 0x95 , 0x16 , 0x3F , 0xF1 , 0xCA , 0xA1 , 0x68 , 0x1F , 0xAC , 0x09 , 0x12 , 0x0E , 0xCA , 0x30 , 0x75 , 0x86 , 0xE1 , 0xA7};
-	Msg("Test cbc2:");
-	buf = AES_obj:cbc_EncryptDecrypt(string.char(table.unpack(AES_EData)) , string.char(table.unpack(AES_Key)) , string.char(table.unpack(AES_IV)) , true);
-	if buf == string.char(table.unpack(AES_DData)) then
-		Msg("encrypt complet");
-	else
-		Msg("encrypt Data:" .. sys.Convert(buf , T_Convert.HexText));
-	end
-	buf2 = AES_obj:cbc_EncryptDecrypt(buf , string.char(table.unpack(AES_Key)) , string.char(table.unpack(AES_IV)) , false);
-	if buf2 == string.char(table.unpack(AES_EData)) then
-		Msg("decrypt complet");
-	else
-		Msg("decrypt Data:" .. sys.Convert(buf2 , T_Convert.HexText));
-	end
-	
+纯Lua实现，测试Lua 5.3，支持128/192/256bit、EBC/CBC、NonePadding，AES。
+
+相关内容包含Padding With ISO10126，或可整合。
+
+## `AES.lua`
+
+`BaseFun_AES` = `AES_Class`，后续简称AES。
+需实例化后使用，实例化方法为`AES:new()`，后续实例简称aes。
+
+#### `set_key`
+
+#### `aes:set_key(key , keylen)`
+
+- `key`：密钥。[字节数组](#字节数组)。
+- ``keylen`：密钥长度——16 / 24 / 32 （128/192/256bits）。
+
+#### `encrypt`
+
+#### `aes:encrypt(plain , pPos , cipher , cPos)`
+
+- `plain`：明文。[字节数组](#字节数组)。
+- `cipher`：密文。输出。[字节数组](#字节数组)。
+
+#### `decrypt`
+
+`aes:decrypt(cipher , pPos , plain , cPos)`
+
+- `cipher`：密文。[字节数组](#字节数组)。
+- `plain`：明文。输出。[字节数组](#字节数组)。
+
+#### `ecb_EncryptDecrypt`
+
+`strData_output = aes:ecb_EncryptDecrypt(strData , strKey , bEncrypt)`
+
+- `strData` ：字符串。
+- `bEncrypt`：加密/解密。布尔。`true` - Encrypt，`false` - Decrypt。
+- `strData_output`：字符串。
+
+|                  | Encrypt | Decrypt |
+| ---------------- | ------- | ------- |
+| `bEncrypt`       | `true`  | `false` |
+| `strData`        | plain   | cipher  |
+| `strData_output` | cipher  | plain   |
+
+#### `cbc_EncryptDecrypt`
+
+`strData_output = aes:cbc_EncryptDecrypt(strData , strKey , strIV , bEncrypt)`
+
+- `strData` ：字符串。
+- `bEncrypt`：加密/解密。布尔。`true` - Encrypt，`false` - Decrypt。
+- `strIV`：初始向量。字符串。
+- `strData_output`：字符串。
+
+|                  | Encrypt | Decrypt |
+| ---------------- | ------- | ------- |
+| `bEncrypt`       | `true`  | `false` |
+| `strData`        | plain   | cipher  |
+| `strData_output` | cipher  | plain   |
+
+#### 其他函数
+
+略。
+
+## `test.lua`
+
+- `Plain_ByteList`：常量，标准值。明文。[字节数组](#字节数组)。
+  原名`AES_EData`（Encrypt Data？）。
+- `Cipher`_ByteList：常量，标准值。密文。[字节数组](#字节数组)。
+  原名`AES_DData`（Decrypt Data？）。
+- `plain_ByteList`：返回的结果。明文。[字节数组](#字节数组)。
+- `cipher_ByteList`：返回的结果。密文。[字节数组](#字节数组)。
+- `plain_Str`：返回的结果。密文。字符串。
+- `ciyher_Str`：返回的结果。密文。字符串。
+
+## `util.lua`
+
+### `toHexString`
+
+`byteList_HexString = toHexString(data)`
+
+- `data`：支持32位`number`、number in `table`、`string`。
+- `byteList_HexString` ：形如`'01 02 .. FF'`。
+
+自[aeslua/util.lua at master · bighil/aeslua (github.com)](https://github.com/bighil/aeslua/blob/master/src/aeslua/util.lua)。
+
+### `bytesToHex`
+
+`str = byteListToString(byteList)`
+
+- `byteList`：[字节数组](#字节数组)。
+
+### [aeslua/util.lua at master · bighil/aeslua (github.com)](https://github.com/bighil/aeslua/blob/master/src/aeslua/util.lua)
+
+包含可用功能：
+
+- `padByteString` / `unpadByteString`：使用到随机数，貌似为ISO10126。
+- `getByte`: get byte at position index
+- `putByte`: put number into int at position index
+- `bytesToInts`: convert byte array to int array
+- `intsToBytes`: convert int array to byte array
+
+## 术语
+
+<a name="字节数组">字节数组</a> 形如`{0x01,0x02,..}`。
+
+## 其他库
+
+[bighil/aeslua: Implementation of aes in nearly pure lua (bitlib is required) (github.com)](https://github.com/bighil/aeslua)
+
+支持AES128 / AES192 / AES256、ECB/CBC/OFB/CFB，Padding with ISO10126?
+
+有多个测试例。
+
+依赖`bitlib`。
+
+分支[gdyr/aeslua53: Implementation of AES in pure Lua 5.3 \(based on bighil/aeslua) (github.com)](https://github.com/gdyr/aeslua53)使用Lua 5.3位操作。
+
+不支持iv传入。
+分支[TobleMiner/aeslua at feature-iv (github.com)](https://github.com/TobleMiner/aeslua/tree/feature-iv)加入支持。
+
+貌似数据长度有问题，结果与外部[工具](#工具)测试不一致、不兼容。
+
+## 工具
+
+[AES在线解密 AES在线加密 Aes online hex 十六进制密钥 - The X 在线工具 (the-x.cn)](https://the-x.cn/cryptography/Aes.aspx)
