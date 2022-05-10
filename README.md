@@ -13,18 +13,18 @@
 
 #### `set_key`
 
-#### `AES:set_key(key , keylen)`
+`AES:set_key(key , keylen)`
 
 私有。
 
 - `key`：密钥。[字节数组](#字节数组)。
-- ``keylen`：密钥长度——16 / 24 / 32 （128/192/256bits）。
+- `keylen`：密钥长度——16 / 24 / 32 （128/192/256bits）。
 
 参见[`GetStringKey`](#GetStringKey)。
 
 #### `encrypt`
 
-#### `aes:encrypt(plain , pPos , cipher , cPos)`
+ `aes:encrypt(plain , pPos , cipher , cPos)`
 
 - `plain`：明文。[字节数组](#字节数组)。
 - `cipher`：密文。输出。[字节数组](#字节数组)。
@@ -124,17 +124,15 @@
 [bighil/aeslua: Implementation of aes in nearly pure lua (bitlib is required) (github.com)](https://github.com/bighil/aeslua)
 
 支持AES128 / AES192 / AES256、ECB/CBC/OFB/CFB，Padding with ISO10126?
-
 有多个测试例。
 
-依赖`bitlib`。
+问题：
 
-分支[gdyr/aeslua53: Implementation of AES in pure Lua 5.3 \(based on bighil/aeslua) (github.com)](https://github.com/gdyr/aeslua53)使用Lua 5.3位操作。
-
-不支持iv传入。
-分支[TobleMiner/aeslua at feature-iv (github.com)](https://github.com/TobleMiner/aeslua/tree/feature-iv)加入支持。
-
-貌似数据长度有问题，结果与外部[工具](#工具)测试不一致、不兼容。
+- 依赖`bitlib`。
+  分支[gdyr/aeslua53: Implementation of AES in pure Lua 5.3 \(based on bighil/aeslua) (github.com)](https://github.com/gdyr/aeslua53)使用Lua 5.3位操作。
+- 不支持iv传入。
+  分支[TobleMiner/aeslua at feature-iv (github.com)](https://github.com/TobleMiner/aeslua/tree/feature-iv)加入支持。
+- 貌似数据长度有问题，结果与外部[工具](#工具)测试不一致、不兼容（解密报错）。
 
 ## 工具
 
