@@ -6,6 +6,12 @@
 
 相关内容包含Padding With ISO10126，或可整合。
 
+## 引入库
+- clone至文件夹AES
+  如：`ZeroBraneStudio\lualibs\AES\`。
+- 代码中`require 'AES'`。
+- 需要包解析路径包含`?\?.lua`。
+
 ## 主要文件和函数：
 
 ## `AES.lua`
