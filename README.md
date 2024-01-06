@@ -5,6 +5,12 @@
 
 纯Lua实现，测试Lua 5.3，支持EBC/CBC、Zero/PKCS7 Padding，AES-128 bit。
 
+## 引入库
+- clone至文件夹AES
+  如：`ZeroBraneStudio\lualibs\AES\`。
+- 代码中`require 'AES'`。
+- 需要包解析路径包含`?\?.lua`。
+
 ## 主要文件和函数：
 
 ## `AES.lua`
