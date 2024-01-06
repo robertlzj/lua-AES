@@ -304,25 +304,47 @@ function BaseFun_AES.GetStringKey(strKey)
 	end
 	return List;
 end
-function BaseFun_AES:GetBlockList(strData)
+function BaseFun_AES:GetBlockList(strData, strPadding)
+	--[[strPadding
+		'ZERO', default;
+		'PKCS7'.
+	]]
 	local i , nLen , nDataLen , List;
 	nLen = string.len(strData);
+	local paddingSize = 0
 	if (nLen%self.N_BLOCK) ~= 0 then
 		nDataLen = (math.floor(nLen/self.N_BLOCK) + 1) * self.N_BLOCK;
+		paddingSize = self.N_BLOCK - nLen%self.N_BLOCK
 	else
-		nDataLen = nLen;
+		if strPadding == 'PKCS7' then
+			nDataLen = nLen + self.N_BLOCK;
+			paddingSize = self.N_BLOCK
+		else assert(strPadding == 'ZERO' or not strPadding)
+			nDataLen = nLen;
+		end
 	end
 	List = {};
+	local paddingByte
+	if strPadding == 'PKCS7' then
+		--paddingByte = string.byte(string.char(paddingSize))
+		paddingByte = paddingSize
+	else assert(strPadding == 'ZERO' or not strPadding)
+		paddingByte = 0
+	end
 	for i = 1 , nDataLen do
 		if i <= nLen then
 			List[i] = string.byte(strData , i);
 		else
-			List[i] = 0; -- 零填充
+			List[i] = paddingByte
 		end
 	end
 	return List;
 end
-function BaseFun_AES:ecb_EncryptDecrypt(strData , strKey , bEncrypt)
+function BaseFun_AES:ecb_EncryptDecrypt(strData , strKey , bEncrypt, strPadding)
+	--[[strPadding
+		'ZERO', default;
+		'PKCS7'.
+	]]
 	local i , List , reList;
 	if type(strData) ~= "string" or type(strKey) ~= "string" then
 		return;
@@ -332,7 +354,7 @@ function BaseFun_AES:ecb_EncryptDecrypt(strData , strKey , bEncrypt)
 	-- end
 	List = self.GetStringKey(strKey);
 	self:set_key(List , #List);
-	List = self:GetBlockList(strData);
+	List = self:GetBlockList(strData, bEncrypt and strPadding);
 	reList = {};
 	if bEncrypt then
 		for i = 1 , #List , self.N_BLOCK do
@@ -341,6 +363,12 @@ function BaseFun_AES:ecb_EncryptDecrypt(strData , strKey , bEncrypt)
 	else
 		for i = 1 , #List , self.N_BLOCK do
 			self:decrypt(List , i , reList , i);
+		end
+		if strPadding == 'PKCS7' then
+			local paddingSize = reList[#reList]
+			for i = #reList, #reList-paddingSize+1, -1 do
+				table.remove(reList,i)
+			end
 		end
 	end
 	local k , txt , txtList; -- i , 
@@ -360,14 +388,18 @@ function BaseFun_AES:ecb_EncryptDecrypt(strData , strKey , bEncrypt)
 	return table.concat(txtList);
 	-- return string.char(table.unpack(reList));
 end
-function BaseFun_AES:cbc_EncryptDecrypt(strData , strKey , strIV , bEncrypt)
+function BaseFun_AES:cbc_EncryptDecrypt(strData , strKey , strIV , bEncrypt, strPadding)
+	--[[strPadding
+		'ZERO', default;
+		'PKCS7'.
+	]]
 	local i , List , ivList , tmpList , reList;
 	if type(strData) ~= "string" or type(strKey) ~= "string" then
 		return;
 	end
 	List = self.GetStringKey(strKey);
 	self:set_key(List , #List);
-	List = self:GetBlockList(strData);
+	List = self:GetBlockList(strData, bEncrypt and strPadding);
 	ivList = self:GetBlockList(strIV);
 	reList = {};
 	if bEncrypt then
@@ -383,6 +415,12 @@ function BaseFun_AES:cbc_EncryptDecrypt(strData , strKey , strIV , bEncrypt)
 			self:decrypt(List , i , reList , i);
 			self:xor_block(reList , i , ivList , 1);
 			self.copy_n_bytes(ivList , 1 , tmpList , 1 , self.N_BLOCK);
+		end
+		if strPadding == 'PKCS7' then
+			local paddingSize = reList[#reList]
+			for i = #reList, #reList-paddingSize+1, -1 do
+				table.remove(reList,i)
+			end
 		end
 	end
 	local k , txt , txtList; -- i , 

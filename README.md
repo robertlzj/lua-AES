@@ -1,10 +1,9 @@
 # lua53-AES
 
 非原创。搬运，解读，应用。
+增加PKCS7 Padding。
 
-纯Lua实现，测试Lua 5.3，支持128/192/256bit、EBC/CBC、ZeroPadding，AES。
-
-相关内容包含Padding With ISO10126，或可整合。
+纯Lua实现，测试Lua 5.3，支持EBC/CBC、Zero/PKCS7 Padding，AES-128 bit。
 
 ## 主要文件和函数：
 
@@ -26,12 +25,16 @@
 
 #### `encrypt`
 
+内部使用。
+
  `aes:encrypt(plain , pPos , cipher , cPos)`
 
 - `plain`：明文。[字节数组](#字节数组)。
 - `cipher`：密文。输出。[字节数组](#字节数组)。
 
 #### `decrypt`
+
+内部使用。
 
 `aes:decrypt(cipher , pPos , plain , cPos)`
 
@@ -40,11 +43,15 @@
 
 #### `ecb_EncryptDecrypt`
 
-`strData_output = aes:ecb_EncryptDecrypt(strData , strKey , bEncrypt)`
+`strData_output = aes:ecb_EncryptDecrypt(strData , strKey , bEncrypt, padding)`
 
 - `strData` ：字符串。
 - `bEncrypt`：加密/解密。布尔。`true` - Encrypt，`false` - Decrypt。
 - `strData_output`：字符串。
+- `padding`: 
+  - `false`/`nil`/`"ZERO"`
+  - `"PKCS7"`
+
 
 |                  | Encrypt | Decrypt |
 | ---------------- | ------- | ------- |
@@ -54,12 +61,15 @@
 
 #### `cbc_EncryptDecrypt`
 
-`strData_output = aes:cbc_EncryptDecrypt(strData , strKey , strIV , bEncrypt)`
+`strData_output = aes:cbc_EncryptDecrypt(strData , strKey , strIV , bEncrypt, padding)`
 
 - `strData` ：字符串。
 - `bEncrypt`：加密/解密。布尔。`true` - Encrypt，`false` - Decrypt。
 - `strIV`：初始向量。字符串。
 - `strData_output`：字符串。
+- `padding`: 
+  - `false`/`nil`/`"ZERO"`
+  - `"PKCS7"`
 
 |                  | Encrypt | Decrypt |
 | ---------------- | ------- | ------- |
@@ -74,6 +84,17 @@
 内部使用。
 包含“零填充”，填充至16/24/32位。
 填充后传递给[`set_key`](#set_key)。
+
+### `GetBlockList`
+
+`byteList_data= = GetBlockList(strData, strPadding)`
+
+`strPadding`: 
+
+- `false`/`nil`/`"ZERO"`
+- `"PKCS7"`
+
+内部使用。
 
 #### 其他函数
 
